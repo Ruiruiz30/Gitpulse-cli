@@ -18,7 +18,7 @@ AI を活用した Git コントリビューション分析ツール。コミッ
 
 ```bash
 # グローバルインストール
-npm install -g gitpulse
+npm install -g gitpulse-cli
 
 # 設定（インタラクティブウィザード）
 gitpulse config --init
@@ -156,7 +156,7 @@ gitpulse compare <a1> <a2>     2人の開発者を比較
 | パッケージ | 説明 |
 |-----------|------|
 | `@gitpulse/core` | コア分析エンジン、スコアリング、レポート生成 |
-| `gitpulse` | CLI ツール |
+| `gitpulse-cli` | CLI ツール |
 
 ## 開発
 

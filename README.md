@@ -18,7 +18,7 @@ AI-powered Git contribution analyzer. Analyze commits, score developer contribut
 
 ```bash
 # Install globally
-npm install -g gitpulse
+npm install -g gitpulse-cli
 
 # Configure (interactive wizard)
 gitpulse config --init
@@ -156,7 +156,7 @@ Each `gitpulse analyze` run automatically:
 | Package | Description |
 |---------|-------------|
 | `@gitpulse/core` | Core analysis engine, scoring, and report generation |
-| `gitpulse` | CLI tool |
+| `gitpulse-cli` | CLI tool |
 
 ## Development
 

@@ -18,7 +18,7 @@
 
 ```bash
 # 全局安装
-npm install -g gitpulse
+npm install -g gitpulse-cli
 
 # 配置（交互式向导）
 gitpulse config --init
@@ -156,7 +156,7 @@ gitpulse compare <a1> <a2>     对比两位开发者
 | 包名 | 描述 |
 |------|------|
 | `@gitpulse/core` | 核心分析引擎、评分与报告生成 |
-| `gitpulse` | CLI 工具 |
+| `gitpulse-cli` | CLI 工具 |
 
 ## 开发
 

@@ -18,7 +18,7 @@ AI 기반 Git 기여도 분석기. 커밋을 분석하고, 개발자 기여를 �
 
 ```bash
 # 전역 설치
-npm install -g gitpulse
+npm install -g gitpulse-cli
 
 # 설정 (대화형 마법사)
 gitpulse config --init
@@ -156,7 +156,7 @@ gitpulse compare <a1> <a2>     두 개발자 비교
 | 패키지 | 설명 |
 |--------|------|
 | `@gitpulse/core` | 핵심 분석 엔진, 점수화, 보고서 생성 |
-| `gitpulse` | CLI 도구 |
+| `gitpulse-cli` | CLI 도구 |
 
 ## 개발
 
