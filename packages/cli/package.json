@@ -1,0 +1,45 @@
+{
+  "name": "gitpulse",
+  "version": "0.1.0",
+  "description": "AI-powered Git contribution analyzer CLI",
+  "type": "module",
+  "bin": {
+    "gitpulse": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup && tsc --emitDeclarationOnly --declaration --declarationDir dist",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.40",
+    "@ai-sdk/google": "^3.0.23",
+    "@ai-sdk/openai": "^3.0.26",
+    "@gitpulse/core": "workspace:*",
+    "@inquirer/prompts": "^7.2.0",
+    "chalk": "^5.4.0",
+    "cli-progress": "^3.12.0",
+    "cli-table3": "^0.6.5",
+    "commander": "^12.1.0",
+    "ora": "^8.1.0",
+    "simple-git": "^3.27.0"
+  },
+  "devDependencies": {
+    "@types/cli-progress": "^3.11.6",
+    "@types/node": "^25.2.2",
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  },
+  "license": "Apache-2.0"
+}

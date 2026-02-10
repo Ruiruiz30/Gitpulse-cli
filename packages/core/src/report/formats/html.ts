@@ -1,0 +1,116 @@
+import type { AnalysisReport } from '../../types/report.js';
+import { roundScore } from '../../scoring/normalizer.js';
+
+export function formatHtml(report: AnalysisReport): string {
+  const authorRows = report.authors
+    .map((a) => {
+      const s = a.score;
+      const trendIcon =
+        s.trend.direction === 'improving'
+          ? '<span style="color:#22c55e">&#9650;</span>'
+          : s.trend.direction === 'declining'
+            ? '<span style="color:#ef4444">&#9660;</span>'
+            : '<span style="color:#94a3b8">&#9654;</span>';
+
+      return `<tr>
+        <td>${escapeHtml(s.authorName)}</td>
+        <td><strong>${roundScore(s.overallScore)}</strong></td>
+        <td>${roundScore(s.dimensionScores.codeQuality.score)}</td>
+        <td>${roundScore(s.dimensionScores.complexityImpact.score)}</td>
+        <td>${roundScore(s.dimensionScores.commitDiscipline.score)}</td>
+        <td>${roundScore(s.dimensionScores.collaboration.score)}</td>
+        <td>${trendIcon} ${s.trend.direction}</td>
+        <td>${s.scoredCommitCount}</td>
+      </tr>`;
+    })
+    .join('\n');
+
+  const authorDetails = report.authors
+    .map((a) => {
+      const s = a.score;
+      const highlights = a.highlights.map((h) => `<li>${escapeHtml(h)}</li>`).join('');
+      const recs = a.recommendations.map((r) => `<li>${escapeHtml(r)}</li>`).join('');
+      const sparkline = s.trend.sparkline.map((v) => roundScore(v)).join(' &rarr; ');
+
+      return `<div class="author-detail">
+        <h3>${escapeHtml(s.authorName)}</h3>
+        <p><strong>Score:</strong> ${roundScore(s.overallScore)}/100 | <strong>Trend:</strong> ${s.trend.direction} (${sparkline})</p>
+        ${highlights ? `<p><strong>Highlights:</strong></p><ul>${highlights}</ul>` : ''}
+        ${recs ? `<p><strong>Recommendations:</strong></p><ul>${recs}</ul>` : ''}
+      </div>`;
+    })
+    .join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitPulse Analysis Report</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1e293b; max-width: 1200px; margin: 0 auto; padding: 2rem; background: #f8fafc; }
+    h1 { color: #0f172a; margin-bottom: 0.5rem; }
+    h2 { color: #334155; margin: 2rem 0 1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
+    h3 { color: #475569; margin: 1rem 0 0.5rem; }
+    .meta { color: #64748b; margin-bottom: 2rem; }
+    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .summary-card { background: white; border-radius: 8px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .summary-card .label { font-size: 0.85rem; color: #64748b; text-transform: uppercase; }
+    .summary-card .value { font-size: 1.8rem; font-weight: 700; color: #0f172a; }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    th { background: #1e293b; color: white; padding: 0.75rem 1rem; text-align: left; font-weight: 600; }
+    td { padding: 0.75rem 1rem; border-bottom: 1px solid #e2e8f0; }
+    tr:hover { background: #f1f5f9; }
+    .author-detail { background: white; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    ul { margin-left: 1.5rem; }
+    li { margin: 0.25rem 0; }
+    .footer { margin-top: 3rem; text-align: center; color: #94a3b8; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <h1>GitPulse Analysis Report</h1>
+  <p class="meta">Generated: ${report.metadata.generatedAt.toISOString()} | Repository: ${escapeHtml(report.metadata.repositoryPath)} | Model: ${escapeHtml(report.metadata.llmProvider)}/${escapeHtml(report.metadata.llmModel)}</p>
+
+  <h2>Summary</h2>
+  <div class="summary">
+    <div class="summary-card"><div class="label">Authors</div><div class="value">${report.summary.totalAuthors}</div></div>
+    <div class="summary-card"><div class="label">Avg Score</div><div class="value">${roundScore(report.summary.averageScore)}</div></div>
+    <div class="summary-card"><div class="label">Top Performer</div><div class="value">${escapeHtml(report.summary.topPerformer)}</div></div>
+    <div class="summary-card"><div class="label">Commits</div><div class="value">${report.metadata.totalCommits}</div></div>
+  </div>
+
+  <h2>Author Scores</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Author</th>
+        <th>Overall</th>
+        <th>Code Quality</th>
+        <th>Complexity</th>
+        <th>Discipline</th>
+        <th>Collaboration</th>
+        <th>Trend</th>
+        <th>Commits</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${authorRows}
+    </tbody>
+  </table>
+
+  <h2>Author Details</h2>
+  ${authorDetails}
+
+  <div class="footer">Generated by GitPulse &mdash; AI-Powered Git Contribution Analyzer</div>
+</body>
+</html>`;
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
