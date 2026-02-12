@@ -45,6 +45,10 @@ gitpulse compare "Alice" "Bob"
 │   ├── complexity-impact.md
 │   ├── commit-discipline.md
 │   └── collaboration.md
+├── cache/                         # 评分缓存（按仓库隔离，自动管理）
+│   └── {repoName}-{hash}/scores/
+├── repos/                         # 克隆的远程仓库
+│   └── {slug}-{hash}/
 ├── history/                       # 分析历史（每次运行生成一个 JSON）
 │   └── {repoName}_{YYYYMMDD-HHmmss}_{id}.json
 ├── memory/                        # Agent 记忆
@@ -53,6 +57,8 @@ gitpulse compare "Alice" "Bob"
 ```
 
 - **rubrics/** — 首次初始化时从内置默认文件复制。可直接编辑以自定义全局评分标准，后续运行不会覆盖已有文件。
+- **cache/** — 按仓库隔离的评分缓存，以 commit hash 为键。避免重复评分未变更的提交。
+- **repos/** — 分析时克隆的远程仓库。
 - **history/** — 每次分析运行后写入摘要 JSON，包含评分、成本和耗时信息。
 - **memory/** — 累积每个仓库的分析次数、滚动平均分以及推断出的用户偏好（提供商、模型、输出格式）。
 - **config.yml** — 全局回退配置（详见下方"配置"章节）。
@@ -148,6 +154,7 @@ gitpulse compare <a1> <a2>     对比两位开发者
 每次 `gitpulse analyze` 运行时自动：
 
 - 若 `~/.gitpulse/` 不存在则创建
+- 未指定 `--since`/`--until` 和 `-y` 时，交互式选择时间范围（最近 1/3/6/12 个月、全部、自定义）
 - 将分析结果记录到 `~/.gitpulse/history/`
 - 更新 `~/.gitpulse/memory/agent-memory.json` 中的 Agent 记忆
 

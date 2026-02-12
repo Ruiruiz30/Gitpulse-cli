@@ -45,6 +45,10 @@ gitpulse compare "Alice" "Bob"
 │   ├── complexity-impact.md
 │   ├── commit-discipline.md
 │   └── collaboration.md
+├── cache/                         # 점수 캐시 (저장소별, 자동 관리)
+│   └── {repoName}-{hash}/scores/
+├── repos/                         # 클론된 원격 저장소
+│   └── {slug}-{hash}/
 ├── history/                       # 분석 기록 (실행당 하나의 JSON)
 │   └── {repoName}_{YYYYMMDD-HHmmss}_{id}.json
 ├── memory/                        # 에이전트 메모리
@@ -53,6 +57,8 @@ gitpulse compare "Alice" "Bob"
 ```
 
 - **rubrics/** — 첫 초기화 시 내장 기본값에서 복사됩니다. 이 파일을 편집하여 글로벌 점수화를 맞춤 설정할 수 있습니다. 이후 실행 시 덮어쓰지 않습니다.
+- **cache/** — 저장소별 점수 캐시. 커밋 해시를 키로 사용하여 변경되지 않은 커밋의 재점수화를 방지합니다.
+- **repos/** — 분석을 위해 클론된 원격 저장소.
 - **history/** — 각 분석 실행 후 점수, 비용, 소요 시간을 포함한 요약 JSON을 작성합니다.
 - **memory/** — 저장소별 분석 횟수, 이동 평균 점수, 추론된 사용자 선호도(제공자, 모델, 출력 형식)를 누적합니다.
 - **config.yml** — 글로벌 폴백 설정 (아래 "설정" 섹션 참조).
@@ -148,6 +154,7 @@ gitpulse compare <a1> <a2>     두 개발자 비교
 `gitpulse analyze` 실행 시 자동으로:
 
 - `~/.gitpulse/`가 존재하지 않으면 생성
+- `--since`/`--until` 및 `-y`가 지정되지 않은 경우, 시간 범위를 대화형으로 선택 (최근 1/3/6/12개월, 전체, 사용자 지정)
 - 분석 결과를 `~/.gitpulse/history/`에 기록
 - `~/.gitpulse/memory/agent-memory.json`의 에이전트 메모리 업데이트
 

@@ -45,6 +45,10 @@ First run (`gitpulse config --init` or any `gitpulse analyze`) automatically cre
 │   ├── complexity-impact.md
 │   ├── commit-discipline.md
 │   └── collaboration.md
+├── cache/                         # Score cache (per-repo, auto-managed)
+│   └── {repoName}-{hash}/scores/
+├── repos/                         # Cloned remote repositories
+│   └── {slug}-{hash}/
 ├── history/                       # Analysis history (one JSON per run)
 │   └── {repoName}_{YYYYMMDD-HHmmss}_{id}.json
 ├── memory/                        # Agent memory
@@ -53,6 +57,8 @@ First run (`gitpulse config --init` or any `gitpulse analyze`) automatically cre
 ```
 
 - **rubrics/** — Copied from built-in defaults on first init. Edit these files to customize scoring globally. They are never overwritten on subsequent runs.
+- **cache/** — Per-repo score cache keyed by commit hash. Avoids re-scoring unchanged commits across runs.
+- **repos/** — Remote repositories cloned for analysis.
 - **history/** — Each analysis run writes a summary JSON including scores, cost, and duration.
 - **memory/** — Accumulates analysis counts per repo, rolling average scores, and inferred preferences (provider, model, format).
 - **config.yml** — Global fallback config (see Configuration below).
@@ -148,6 +154,7 @@ gitpulse compare <a1> <a2>     Compare two developers
 Each `gitpulse analyze` run automatically:
 
 - Creates `~/.gitpulse/` if it doesn't exist
+- Prompts for a time range (last month / 3 months / 6 months / year / all / custom) when `--since`/`--until` and `-y` are not specified
 - Records analysis results to `~/.gitpulse/history/`
 - Updates agent memory in `~/.gitpulse/memory/agent-memory.json`
 

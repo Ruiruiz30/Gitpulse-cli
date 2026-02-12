@@ -45,6 +45,10 @@ gitpulse compare "Alice" "Bob"
 │   ├── complexity-impact.md
 │   ├── commit-discipline.md
 │   └── collaboration.md
+├── cache/                         # スコアキャッシュ（リポジトリ別、自動管理）
+│   └── {repoName}-{hash}/scores/
+├── repos/                         # クローンされたリモートリポジトリ
+│   └── {slug}-{hash}/
 ├── history/                       # 分析履歴（実行ごとに1つの JSON）
 │   └── {repoName}_{YYYYMMDD-HHmmss}_{id}.json
 ├── memory/                        # エージェントメモリ
@@ -53,6 +57,8 @@ gitpulse compare "Alice" "Bob"
 ```
 
 - **rubrics/** — 初回初期化時に組み込みデフォルトからコピーされます。グローバルなスコアリングをカスタマイズするためにこれらのファイルを編集できます。以降の実行で上書きされることはありません。
+- **cache/** — リポジトリごとのスコアキャッシュ。コミットハッシュをキーとし、変更のないコミットの再スコアリングを回避します。
+- **repos/** — 分析時にクローンされたリモートリポジトリ。
 - **history/** — 各分析実行後にスコア、コスト、所要時間を含むサマリー JSON を書き込みます。
 - **memory/** — リポジトリごとの分析回数、移動平均スコア、推定されたユーザー設定（プロバイダー、モデル、出力形式）を蓄積します。
 - **config.yml** — グローバルフォールバック設定（下記「設定」セクションを参照）。
@@ -148,6 +154,7 @@ gitpulse compare <a1> <a2>     2人の開発者を比較
 `gitpulse analyze` を実行するたびに自動的に：
 
 - `~/.gitpulse/` が存在しない場合は作成
+- `--since`/`--until` および `-y` が指定されていない場合、時間範囲をインタラクティブに選択（直近1/3/6/12ヶ月、全期間、カスタム）
 - 分析結果を `~/.gitpulse/history/` に記録
 - `~/.gitpulse/memory/agent-memory.json` のエージェントメモリを更新
 
