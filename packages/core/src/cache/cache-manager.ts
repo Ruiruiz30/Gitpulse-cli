@@ -1,5 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import * as os from 'node:os';
+import * as crypto from 'node:crypto';
 import type { CommitScore } from '../types/scoring.js';
 
 export interface CachedScore {
@@ -9,11 +11,19 @@ export interface CachedScore {
   timestamp: number;
 }
 
+function repoId(repoPath: string): string {
+  const resolved = path.resolve(repoPath);
+  const hash = crypto.createHash('sha256').update(resolved).digest('hex').substring(0, 12);
+  const name = path.basename(resolved);
+  return `${name}-${hash}`;
+}
+
 export class CacheManager {
   private cacheDir: string;
 
   constructor(repoPath: string) {
-    this.cacheDir = path.join(repoPath, '.gitpulse', 'cache', 'scores');
+    const homeDir = path.join(os.homedir(), '.gitpulse', 'cache', repoId(repoPath), 'scores');
+    this.cacheDir = homeDir;
   }
 
   ensureCacheDir(): void {
