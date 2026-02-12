@@ -241,7 +241,18 @@ async function showQuickMenu(): Promise<boolean> {
       break;
     }
     case 'config': {
-      await configCommandInner({ show: true });
+      const configAction = await select({
+        message: 'Configuration:',
+        choices: [
+          { value: 'show', name: 'Show current configuration' },
+          { value: 'reconfigure', name: 'Reconfigure (change provider, model, API key)' },
+        ],
+      });
+      if (configAction === 'reconfigure') {
+        await runOnboarding();
+      } else {
+        await configCommandInner({ show: true });
+      }
       break;
     }
     case 'help': {
