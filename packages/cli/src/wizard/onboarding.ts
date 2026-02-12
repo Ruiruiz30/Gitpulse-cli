@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import * as os from 'node:os';
 import { select, input, password } from '@inquirer/prompts';
 import { theme } from '../ui/theme.js';
+import { HomeManager } from '@gitpulse/core';
 import type { LLMProviderType } from '@gitpulse/core';
 
 const HOME_DIR = path.join(os.homedir(), '.gitpulse');
@@ -78,6 +79,10 @@ model: ${model}
   }
 
   fs.writeFileSync(CONFIG_FILE, yaml, 'utf-8');
+
+  // Initialize full home directory structure (rubrics, history, memory)
+  const home = new HomeManager();
+  home.initialize();
 
   console.log(theme.success(`\n  Configuration saved to ${CONFIG_FILE}`));
   console.log('');
